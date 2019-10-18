@@ -12,7 +12,7 @@ function mdHelpAdd {
 
         # Code block:
         [Parameter(ParameterSetName='code')]
-        [ValidateSet('default','yaml')]
+        [ValidateSet('default','yaml','powershell')]
         [string]
         $Code,
 
@@ -39,7 +39,17 @@ function mdHelpAdd {
         # Display result only, used for testing:
         [Parameter()]
         [switch]
-        $Display=$false
+        $Display=$false,
+
+        # Don't trim the string:
+        [Parameter(ParameterSetName='string')]
+        [switch]
+        $NoTrim,
+
+        # Don't trim the string:
+        [Parameter(ParameterSetName='line')]
+        [switch]
+        $Line
     )
 
     # Set my prefferences:
@@ -52,7 +62,20 @@ function mdHelpAdd {
     switch ($PSCmdlet.ParameterSetName) {
         # Write a simple string:
         'string' {
-            $returnMe = $String.Trim()
+            if ($NoTrim.IsPresent) {
+                $returnMe = $String
+            } else {
+                $returnMe = $String.Trim()
+            }
+            [void]$mdHelp.Add($returnMe)
+            if ($Display.IsPresent) { $mdHelp }
+            return
+        }
+
+        # Write a horizontal line:
+        'line' {
+            mdHelpAdd -EmptyLine
+            $returnMe = '---'
             [void]$mdHelp.Add($returnMe)
             if ($Display.IsPresent) { $mdHelp }
             return
@@ -77,6 +100,10 @@ function mdHelpAdd {
                     $returnMe = '```yaml'
                     [void]$mdHelp.Add("$returnMe")
                 }
+                'powershell' {
+                    $returnMe = '```powershell'
+                    [void]$mdHelp.Add("$returnMe")
+                }
             }
             if ($Display.IsPresent) { $mdHelp }
             return
@@ -84,26 +111,29 @@ function mdHelpAdd {
         
         # Write the examples:
         'examples' {
-            for ($i = 0; $i -lt $Examples.Count; $i++) {
-                $example = $Examples[$i]
-                [void]$mdHelp.Add("### $($Example.Title)")
+            for ($i = 0; $i -lt $Examples.example.Count; $i++) {
+                mdHelpAdd -String "### $($Examples.example[$i].title.Replace('-',''))"
+                mdHelpAdd -Code powershell
+                mdHelpAdd -String "$($Examples.example[$i].code)"
                 mdHelpAdd -Code default
-                [void]$mdHelp.Add($example.Code)
-                mdHelpAdd -Code default
-                mdHelpAdd -EmptyLine
-                mdHelpAdd $(Remove-EmptyLines -String $helpObject.examples.example[$i].remarks.Text)
+                mdHelpAdd -String $(Remove-EmptyLines $($Examples.example[$i].remarks.text))
                 mdHelpAdd -EmptyLine
             }
-            if ($Display.IsPresent) { $mdHelp }
             return
         }
 
         # Write the parameters:
         'parameters' {
-            for ($i = 0; $i -lt $Parameters.Count; $i++) {
-                $parameter = $Parameters[$i]
-                [void]$mdHelp.Add("### -$($parameter.parameters.parameter.Name)")
-                [void]$mdHelp.Add("$($parameter.parameters.parameter.Description.Text)")
+            for ($i = 0; $i -lt $Parameters.parameter.Count; $i++) {    
+                mdHelpAdd -String "#### -$($Parameters.parameter[$i].name)"
+                mdHelpAdd -String "$($Parameters.parameter[$i].Description.Text)"
+                mdHelpAdd -Code default
+                mdHelpAdd -String "Type:                        $($Parameters.parameter[$i].type.name)"
+                mdHelpAdd -String "Position:                    $($Parameters.parameter[$i].position)"
+                mdHelpAdd -String "Default value:               $($Parameters.parameter[$i].defaultvalue)"
+                mdHelpAdd -String "Accept pipeline inpit:       $($Parameters.parameter[$i].position)"
+                mdHelpAdd -String "Accept wildcard characters:  $($Parameters.parameter[$i].position)"
+                mdHelpAdd -Code default
                 mdHelpAdd -EmptyLine
             }
             if ($Display.IsPresent) { $mdHelp }
@@ -144,28 +174,30 @@ function mdHelpAdd {
         # Write the syntax:
         'syntax' {
             # Loop through available syntaxes:
-            $syntaxArr = @()
             for ($i = 0; $i -lt $Syntax.syntaxItem.Count; $i++) {
                 $syntaxArrTmp = @()
-                $syntaxArrTmp += "$($Syntax.syntaxItem[$i].name) ["
-                
+                $syntaxArrTmp += "$($Syntax.syntaxItem[$i].name)"
+
                 # Loop over each parameter in syntax:
                 for ($j = 0; $j -lt $Syntax.syntaxItem[$i].Parameter.Count; $j++) {
-                    $syntaxArrTmp += "[-$($Syntax.syntaxItem[$i].Parameter[$j].name)] <$($Syntax.syntaxItem[$i].Parameter[$j].parameterValue)>]"
-                    if (($Syntax | Out-String) -match '[<CommonParameters>]') {
-                        $syntaxArrTmp += "[<CommonParameters>]"
+                    if ($j -eq '0') {
+                            $syntaxArrTmp += "`t[[-$($Syntax.syntaxItem[$i].Parameter[$j].name)] <$($Syntax.syntaxItem[$i].Parameter[$j].parameterValue)>]"
+                    } else {
+                            $syntaxArrTmp += "`t[-$($Syntax.syntaxItem[$i].Parameter[$j].name)] <$($Syntax.syntaxItem[$i].Parameter[$j].parameterValue)>]"
                     }
                 }
 
-                # Put everything in array & put into markdown help:
-                $syntaxArr += $($syntaxArrTmp -join "")
-                foreach ($syntaxLine in $syntaxArr) {
-                    mdHelpAdd -Code default
-                    mdHelpAdd -String $($syntaxArrTmp -join "")
-                    mdHelpAdd -Code default
-                    mdHelpAdd -EmptyLine
+                if (($Syntax | Out-String) -match '[<CommonParameters>]') {
+                    $syntaxArrTmp += "`t[<CommonParameters>]"
                 }
+                
+                # Output syntax to markdown help:
+                mdHelpAdd -Code powershell
+                mdHelpAdd -String $syntaxArrTmp -NoTrim
+                mdHelpAdd -Code default
+                mdHelpAdd -EmptyLine
             }
+
             if ($Display.IsPresent) { $mdHelp }
             return
         }
