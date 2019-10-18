@@ -1,3 +1,15 @@
+
+function gt {
+    [CmdletBinding()]
+    param (
+        # InputObject
+        [Parameter(Mandatory,ValueFromPipeline)]
+        $InputObject
+    )
+
+    ($InputObject).GetType()
+}
+
 function New-mdPSDoc {
     [CmdletBinding(DefaultParameterSetName='command')]
     param (
@@ -46,38 +58,36 @@ function New-mdPSDoc {
     }
 
     # Construct the Markdown help object:
-    mdHelpAdd "# $($helpObject.Name)"
+    mdHelpAdd -String "# $($helpObject.Name)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## SYNOPSIS"
+    mdHelpAdd -String "## SYNOPSIS"
     mdHelpAdd "$($helpObject.Synopsis)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## SYNTAX"
-    mdHelpAdd -Code default
-    mdHelpAdd -Syntax $HelpObject.syntax
-    mdHelpAdd -Code default
+    mdHelpAdd -String  "## SYNTAX"
+    mdHelpAdd -Syntax $($HelpObject.syntax)
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## DESCRIPTION"
-    mdHelpAdd "$($helpObject.description.Text)"
+    mdHelpAdd -String  "## DESCRIPTION"
+    mdHelpAdd -String  "$($helpObject.description.Text)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## EXAMPLES"
+    mdHelpAdd -String  "## EXAMPLES"
     mdHelpAdd -EmptyLine
     mdHelpAdd -Examples $helpObject.examples.example
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## PARAMETERS"
+    mdHelpAdd -String  "## PARAMETERS"
     mdHelpAdd -EmptyLine
     mdHelpAdd $(EscapeMarkDownChars $($HelpObject.parameters.parameter | Out-String))
     mdHelpAdd -CommonParameters $($HelpObject.parameters | Out-String)
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## INPUTS"
-    mdHelpAdd "$($helpObject.inputTypes.inputType.type.name)"
+    mdHelpAdd -String  "## INPUTS"
+    mdHelpAdd -String  "$($helpObject.inputTypes.inputType.type.name)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## OUTPUTS"
-    mdHelpAdd "$($helpObject.returnValues.returnValue.type.name)"
+    mdHelpAdd -String  "## OUTPUTS"
+    mdHelpAdd -String  "$($helpObject.returnValues.returnValue.type.name)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## NOTES"
-    mdHelpAdd "$($helpObject.alertSet.alert.Text)"
+    mdHelpAdd -String  "## NOTES"
+    mdHelpAdd -String  "$($helpObject.alertSet.alert.Text)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd "## RELATED LINKS"
+    mdHelpAdd -String  "## RELATED LINKS"
     mdHelpAdd -Links $helpObject.relatedLinks
 
     if ($OutputToHost.IsPresent) {
@@ -92,3 +102,11 @@ function New-mdPSDoc {
         Write-Information "$outputFile"
     }
 }
+
+
+
+$helpObject = Get-Command Get-AzStorageBlob | Get-Help -Full
+New-mdPSDoc -HelpObject $helpObject -OutputToHost | pbcopy
+
+#[System.Collections.ArrayList]$mdHelp = @()
+#mdHelpAdd -Syntax $helpObject.syntax -Display

@@ -3,7 +3,7 @@ function mdHelpAdd {
     param (
         # Input object for MarkDown help:
         [Parameter(Mandatory,Position=0,ParameterSetName='string')]
-        $InputObject,
+        $String,
 
         # Empty Line Add:
         [Parameter(ParameterSetName='emptyline')]
@@ -34,7 +34,12 @@ function mdHelpAdd {
 
         # Add syntax:
         [Parameter(ParameterSetName='syntax')]
-        $Syntax
+        $Syntax,
+
+        # Display result only, used for testing:
+        [Parameter()]
+        [switch]
+        $Display=$false
     )
 
     # Set my prefferences:
@@ -45,24 +50,39 @@ function mdHelpAdd {
 
     # Perform action based on parameter set name:
     switch ($PSCmdlet.ParameterSetName) {
+        # Write a simple string:
         'string' {
-            [void]$mdHelp.Add($InputObject)
+            $returnMe = $String.Trim()
+            [void]$mdHelp.Add($returnMe)
+            if ($Display.IsPresent) { $mdHelp }
             return
         }
+       
+        # Write an empty line:
         'emptyline' {
-            [void]$mdHelp.Add("")
+            $returnMe = "`r`n"
+            [void]$mdHelp.Add("$returnMe")
+            if ($Display.IsPresent) { $mdHelp }
+            return
         }
+        
+        # Write the code block:
         'code' {
             switch ($Code) {
                 'default' {
-                    [void]$mdHelp.Add('```')
+                    $returnMe = '```'
+                    [void]$mdHelp.Add("$returnMe")
                 }
                 'yaml' {
-                    [void]$mdHelp.Add('```yaml')
+                    $returnMe = '```yaml'
+                    [void]$mdHelp.Add("$returnMe")
                 }
             }
+            if ($Display.IsPresent) { $mdHelp }
             return
         }
+        
+        # Write the examples:
         'examples' {
             for ($i = 0; $i -lt $Examples.Count; $i++) {
                 $example = $Examples[$i]
@@ -74,8 +94,11 @@ function mdHelpAdd {
                 mdHelpAdd $(Remove-EmptyLines -String $helpObject.examples.example[$i].remarks.Text)
                 mdHelpAdd -EmptyLine
             }
+            if ($Display.IsPresent) { $mdHelp }
             return
         }
+
+        # Write the parameters:
         'parameters' {
             for ($i = 0; $i -lt $Parameters.Count; $i++) {
                 $parameter = $Parameters[$i]
@@ -83,16 +106,24 @@ function mdHelpAdd {
                 [void]$mdHelp.Add("$($parameter.parameters.parameter.Description.Text)")
                 mdHelpAdd -EmptyLine
             }
+            if ($Display.IsPresent) { $mdHelp }
             return
         }
+
+        # Write the common parameters:
         'commonparameters' {
             if ($CommonParameters -match 'This cmdlet supports the common parameters') {
                 $commonParamString = 'This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).'
                 mdHelpAdd -EmptyLine
                 mdHelpAdd "CommonParameters"
                 mdHelpAdd $commonParamString
+                
             }
+            if ($Display.IsPresent) { $mdHelp }
+            return
         }
+
+        # Write the links:
         'links' {
             if ($Links.navigationLink.Uri.Count -eq 0) {
                 return
@@ -106,19 +137,37 @@ function mdHelpAdd {
                     mdHelpAdd $mdLink
                 }  
             }
+            if ($Display.IsPresent) { $mdHelp }
+            return
         }
+
+        # Write the syntax:
         'syntax' {
-            $tmpSyntax = $Syntax | Out-String
-            $tmpSyntax = $tmpSyntax.Split("`n").Where({$_ -ne ""}).Split("$($Syntax.syntaxItem.Name[0])")
-            for ($i = 0; $i -lt $tmpSyntax.Count; $i++) {
-                if ($tmpSyntax[$i] -eq "") {
-                    # Empty string.
-                } else {
-                    $syntaxOut = "{0} {1}" -f $($Syntax.syntaxItem.Name[0]),$tmpSyntax[$i]
-                    mdHelpAdd $syntaxOut
+            # Loop through available syntaxes:
+            $syntaxArr = @()
+            for ($i = 0; $i -lt $Syntax.syntaxItem.Count; $i++) {
+                $syntaxArrTmp = @()
+                $syntaxArrTmp += "$($Syntax.syntaxItem[$i].name) ["
+                
+                # Loop over each parameter in syntax:
+                for ($j = 0; $j -lt $Syntax.syntaxItem[$i].Parameter.Count; $j++) {
+                    $syntaxArrTmp += "[-$($Syntax.syntaxItem[$i].Parameter[$j].name)] <$($Syntax.syntaxItem[$i].Parameter[$j].parameterValue)>]"
+                    if (($Syntax | Out-String) -match '[<CommonParameters>]') {
+                        $syntaxArrTmp += "[<CommonParameters>]"
+                    }
+                }
+
+                # Put everything in array & put into markdown help:
+                $syntaxArr += $($syntaxArrTmp -join "")
+                foreach ($syntaxLine in $syntaxArr) {
+                    mdHelpAdd -Code default
+                    mdHelpAdd -String $($syntaxArrTmp -join "")
+                    mdHelpAdd -Code default
                     mdHelpAdd -EmptyLine
                 }
             }
+            if ($Display.IsPresent) { $mdHelp }
+            return
         }
     }
 }
