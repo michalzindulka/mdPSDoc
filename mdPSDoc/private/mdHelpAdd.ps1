@@ -183,14 +183,21 @@ function mdHelpAdd {
                     if ($j -eq '0') {
                             $syntaxArrTmp += "`t[[-$($Syntax.syntaxItem[$i].Parameter[$j].name)] <$($Syntax.syntaxItem[$i].Parameter[$j].parameterValue)>]"
                     } else {
-                            $syntaxArrTmp += "`t[-$($Syntax.syntaxItem[$i].Parameter[$j].name)] <$($Syntax.syntaxItem[$i].Parameter[$j].parameterValue)>]"
+                        if ($Syntax.syntaxItem[$i].Parameter[$j].parameterValue -match 'System.Nullable`1') {
+                            $paramValue = ($Syntax.syntaxItem[$i].Parameter[$j].parameterValue).Replace('System.Nullable`1','')
+                            if ($null -ne $paramValue) { $paramValue = $paramValue.Split('.')[-1] }
+                        } else {
+                            $paramValue = $($Syntax.syntaxItem[$i].Parameter[$j].parameterValue)
+                            if ($null -ne $paramValue) { $paramValue = $paramValue.Split('.')[-1] }
+                        }
+                        $syntaxArrTmp += "`t[-$($Syntax.syntaxItem[$i].Parameter[$j].name)] <$paramValue>]"
                     }
                 }
 
                 if (($Syntax | Out-String) -match '[<CommonParameters>]') {
                     $syntaxArrTmp += "`t[<CommonParameters>]"
                 }
-                
+
                 # Output syntax to markdown help:
                 mdHelpAdd -Code powershell
                 mdHelpAdd -String $syntaxArrTmp -NoTrim
