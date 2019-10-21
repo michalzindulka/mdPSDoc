@@ -1,15 +1,3 @@
-
-function gt {
-    [CmdletBinding()]
-    param (
-        # InputObject
-        [Parameter(Mandatory,ValueFromPipeline)]
-        $InputObject
-    )
-
-    ($InputObject).GetType()
-}
-
 function New-mdPSDoc {
     [CmdletBinding(DefaultParameterSetName='command')]
     param (
@@ -69,16 +57,16 @@ function New-mdPSDoc {
     mdHelpAdd -EmptyLine
     mdHelpAdd -String "$($helpObject.Synopsis)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd -Syntax $($HelpObject.syntax)
+    mdHelpAdd -Syntax "$($HelpObject.syntax)"
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## DESCRIPTION"
     mdHelpAdd -String  "$($helpObject.description.Text)"
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## EXAMPLES"
-    mdHelpAdd -Examples $($helpObject.examples)
+    mdHelpAdd -Examples "$($helpObject.examples)"
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## PARAMETERS"
-    mdHelpAdd -Parameters $($helpObject.parameters)
+    mdHelpAdd -Parameters "$($helpObject.parameters)"
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## INPUTS"
     mdHelpAdd -String  "$($helpObject.inputTypes.inputType.type.name)"
@@ -90,7 +78,7 @@ function New-mdPSDoc {
     mdHelpAdd -String  "$($helpObject.alertSet.alert.Text)"
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## RELATED LINKS"
-    mdHelpAdd -Links $helpObject.relatedLinks
+    mdHelpAdd -Links "$($helpObject.relatedLinks)"
 
     # Generate the output:
     if ($OutputToHost.IsPresent) {
@@ -105,8 +93,3 @@ function New-mdPSDoc {
         Write-Information "$outputFile"
     }
 }
-
-
-$helpObject = Get-Command Get-AzStorageBlob | Get-Help -Full
-#$helpObject = Get-Command Connect-AZSubscription | Get-Help -Full
-New-mdPSDoc -HelpObject $helpObject
