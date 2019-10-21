@@ -30,7 +30,13 @@ function New-mdPSDoc {
         # Command Name from which to create markdown help:
         [Parameter(ParameterSetName='command')]
         [string]
-        $CommandName
+        $CommandName,
+
+        # Help style:
+        [Parameter()]
+        [ValidateSet('classic','microsoft','new')]
+        [string]
+        $Style = 'new'
     )
 
     # Set my prefferences:
@@ -57,26 +63,22 @@ function New-mdPSDoc {
         }
     }
 
-    # Construct the Markdown help object:
+    # Generate markdown help::
     mdHelpAdd -String "# $($helpObject.Name)"
+    mdHelpAdd -String "Module: [$($helpObject.ModuleName)]()"
     mdHelpAdd -EmptyLine
-    mdHelpAdd -String "## SYNOPSIS"
-    mdHelpAdd "$($helpObject.Synopsis)"
+    mdHelpAdd -String "$($helpObject.Synopsis)"
     mdHelpAdd -EmptyLine
-    mdHelpAdd -String  "## SYNTAX"
     mdHelpAdd -Syntax $($HelpObject.syntax)
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## DESCRIPTION"
     mdHelpAdd -String  "$($helpObject.description.Text)"
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## EXAMPLES"
-    mdHelpAdd -EmptyLine
-    mdHelpAdd -Examples $helpObject.examples.example
+    mdHelpAdd -Examples $($helpObject.examples)
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## PARAMETERS"
-    mdHelpAdd -EmptyLine
-    mdHelpAdd $(EscapeMarkDownChars $($HelpObject.parameters.parameter | Out-String))
-    mdHelpAdd -CommonParameters $($HelpObject.parameters | Out-String)
+    mdHelpAdd -Parameters $($helpObject.parameters)
     mdHelpAdd -EmptyLine
     mdHelpAdd -String  "## INPUTS"
     mdHelpAdd -String  "$($helpObject.inputTypes.inputType.type.name)"
@@ -90,6 +92,7 @@ function New-mdPSDoc {
     mdHelpAdd -String  "## RELATED LINKS"
     mdHelpAdd -Links $helpObject.relatedLinks
 
+    # Generate the output:
     if ($OutputToHost.IsPresent) {
         return $mdHelp   
     } elseif ($OutputLocation) {
@@ -104,9 +107,6 @@ function New-mdPSDoc {
 }
 
 
-
 $helpObject = Get-Command Get-AzStorageBlob | Get-Help -Full
-New-mdPSDoc -HelpObject $helpObject -OutputToHost | pbcopy
-
-#[System.Collections.ArrayList]$mdHelp = @()
-#mdHelpAdd -Syntax $helpObject.syntax -Display
+#$helpObject = Get-Command Connect-AZSubscription | Get-Help -Full
+New-mdPSDoc -HelpObject $helpObject
