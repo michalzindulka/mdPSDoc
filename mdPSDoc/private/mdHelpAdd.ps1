@@ -128,7 +128,7 @@ function mdHelpAdd {
                 mdHelpAdd -String "#### -$($Parameters.parameter[$i].name)"
                 mdHelpAdd -String "$($Parameters.parameter[$i].Description.Text)"
                 mdHelpAdd -Code default
-                mdHelpAdd -String "Type:                        $($Parameters.parameter[$i].type.name)"
+                mdHelpAdd -String "Type:                        $($($helpObject.parameters.parameter[$i].type.name).Replace('System.Nullable`1',''))"
                 mdHelpAdd -String "Position:                    $($Parameters.parameter[$i].position)"
                 mdHelpAdd -String "Default value:               $($Parameters.parameter[$i].defaultvalue)"
                 mdHelpAdd -String "Accept pipeline inpit:       $($Parameters.parameter[$i].position)"

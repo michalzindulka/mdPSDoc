@@ -109,4 +109,4 @@ function New-mdPSDoc {
 
 $helpObject = Get-Command Get-AzStorageBlob | Get-Help -Full
 #$helpObject = Get-Command Connect-AZSubscription | Get-Help -Full
-New-mdPSDoc -HelpObject $helpObject -OutputToHost | pbcopy
+New-mdPSDoc -HelpObject $helpObject
