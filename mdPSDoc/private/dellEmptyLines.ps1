@@ -1,4 +1,4 @@
-function Remove-EmptyLines {
+function dellEmptyLines {
     [CmdletBinding()]
     param (
         # Input string:
@@ -15,7 +15,6 @@ function Remove-EmptyLines {
     # Remove empty lines from string:
     try {
         $returnString = [string]::new($($String.Split("\n").Where({$_ -ne ""})))
-        $returnString = [string]::new($($String.Split("`n").Where({$_ -ne ""})))
     }
     catch {
         $returnString = 'ERROR: UNABLE TO PARSE'

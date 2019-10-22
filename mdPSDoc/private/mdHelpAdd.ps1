@@ -49,7 +49,12 @@ function mdHelpAdd {
         # Don't trim the string:
         [Parameter(ParameterSetName='line')]
         [switch]
-        $Line
+        $Line,
+
+        # Name:
+        [Parameter(ParameterSetName='name')]
+        [string]
+        $Name
     )
 
     # Set my prefferences:
@@ -116,9 +121,10 @@ function mdHelpAdd {
                 mdHelpAdd -Code powershell
                 mdHelpAdd -String "$($Examples.example[$i].code)"
                 mdHelpAdd -Code default
-                mdHelpAdd -String $(Remove-EmptyLines $($Examples.example[$i].remarks.text))
+                mdHelpAdd -String $(dellEmptyLines $($Examples.example[$i].remarks.text))
                 mdHelpAdd -EmptyLine
             }
+            if ($Display.IsPresent) { $mdHelp }
             return
         }
 
@@ -130,9 +136,10 @@ function mdHelpAdd {
                 mdHelpAdd -Code default
                 mdHelpAdd -String "Type:                        $($($helpObject.parameters.parameter[$i].type.name).Replace('System.Nullable`1',''))"
                 mdHelpAdd -String "Position:                    $($Parameters.parameter[$i].position)"
+                mdHelpAdd -String "Required:                    $($Parameters.parameter[$i].required)"
                 mdHelpAdd -String "Default value:               $($Parameters.parameter[$i].defaultvalue)"
-                mdHelpAdd -String "Accept pipeline inpit:       $($Parameters.parameter[$i].position)"
-                mdHelpAdd -String "Accept wildcard characters:  $($Parameters.parameter[$i].position)"
+                mdHelpAdd -String "Accept pipeline input:       $($Parameters.parameter[$i].pipelineInput)"
+                mdHelpAdd -String "Accept wildcard characters:  $($Parameters.parameter[$i].globbing)"
                 mdHelpAdd -Code default
                 mdHelpAdd -EmptyLine
             }
@@ -176,7 +183,7 @@ function mdHelpAdd {
             # Loop through available syntaxes:
             for ($i = 0; $i -lt $Syntax.syntaxItem.Count; $i++) {
                 $syntaxArrTmp = @()
-                $syntaxArrTmp += "$($Syntax.syntaxItem[$i].name)"
+                $syntaxArrTmp += "$($Syntax.syntaxItem[0].name.Split("$pathSeparator")[-1])"
 
                 # Loop over each parameter in syntax:
                 for ($j = 0; $j -lt $Syntax.syntaxItem[$i].Parameter.Count; $j++) {
@@ -205,6 +212,13 @@ function mdHelpAdd {
                 mdHelpAdd -EmptyLine
             }
 
+            if ($Display.IsPresent) { $mdHelp }
+            return
+        }
+        # Fill the command / script name:
+        'name' {
+            $returnMe = "# $($Name.Split("$pathSeparator")[-1].Replace('.ps1',''))"
+            [void]$mdHelp.Add($returnMe)
             if ($Display.IsPresent) { $mdHelp }
             return
         }

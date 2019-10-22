@@ -1,4 +1,4 @@
-function EscapeMarkDownChars {
+function escapeMarkDownChars {
     [CmdletBinding()]
     param (
         # Input string parameter:
