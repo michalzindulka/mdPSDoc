@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'MDPSDoc.psm1'
+RootModule = 'mdPSDoc.psm1'
 
 # Version number of this module.
 ModuleVersion = '1.0.0'
@@ -30,7 +30,7 @@ CompanyName = 'michalzindulka.com'
 Copyright = '(c) Michal Zindulka. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell Script Module: MDPSDoc'
+Description = 'PowerShell Script Module: mdPSDoc'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''

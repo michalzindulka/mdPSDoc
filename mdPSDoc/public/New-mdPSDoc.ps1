@@ -16,20 +16,20 @@
 .PARAMETER File
     Use to generate markdown help from a PowerShell script file.
 .EXAMPLE
-    New-MDPSDoc -CommandName Get-Service
+    New-mdPSDoc -CommandName Get-Service
     Generate Markdown help from a cmdle 'Get-Service' and save to current location.
 .EXAMPLE
-    New-MDPSDoc -File /Users/mike/Documents/Scripts/PowerShell/Azure/Get-AzVmNetwork/Get-AzVmNetwork.ps1 -OutputLocation /Users/mike/Documents/Scripts/HelpFiles/
+    New-mdPSDoc -File /Users/mike/Documents/Scripts/PowerShell/Azure/Get-AzVmNetwork/Get-AzVmNetwork.ps1 -OutputLocation /Users/mike/Documents/Scripts/HelpFiles/
     Generate Markdown help from a PowerShell script file and store to defined output location.
 .EXAMPLE
-    New-MDPSDoc -Module mzToolkit.General
+    New-mdPSDoc -Module mzToolkit.General
     Generate Markdown help from each cmdlet of module and store to current location.
 .NOTES
     Use with joy.
 .LINK
     https://github.com/michalzindulka/mdPSDoc
 #>
-function New-MDPSDoc {
+function New-mdPSDoc {
     [CmdletBinding(DefaultParameterSetName='command')]
     param (
         # Input Help Object:
