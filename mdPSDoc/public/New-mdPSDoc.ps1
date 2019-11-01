@@ -145,13 +145,13 @@ function New-mdPSDoc {
         if ($OutputToHost.IsPresent) {
             return $mdHelp   
         } elseif ($OutputLocation) {
-            $helpName = ($helpObject.Name.Split('/')[-1]).Replace('.ps1','')
-            $outputFile = "$OutputLocation/$helpName.md"
+            $helpName = ($helpObject.Name.Split("$pathSeparator")[-1]).Replace('.ps1','')
+            $outputFile = "$OutputLocation$pathSeparator$helpName.md"
             $mdHelp | Out-File "$outputFile" -Force -Encoding utf8
             Write-Information "$outputFile"
         } else {
-            $helpName = ($helpObject.Name.Split('/')[-1]).Replace('.ps1','')
-            $outputFile = "./$helpName.md"
+            $helpName = ($helpObject.Name.Split("$pathSeparator")[-1]).Replace('.ps1','')
+            $outputFile = ".$pathSeparator$helpName.md"
             $mdHelp | Out-File "$outputFile" -Force -Encoding utf8
             Write-Information "$outputFile"
         }
