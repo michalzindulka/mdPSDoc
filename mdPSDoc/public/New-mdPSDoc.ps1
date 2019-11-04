@@ -143,8 +143,9 @@ function New-mdPSDoc {
 
         # Generate the output:
         if ($OutputToHost.IsPresent) {
-            return $mdHelp   
+            return $mdHelp
         } elseif ($OutputLocation) {
+            if (!(Test-Path $OutputLocation)) { [void](New-Item $OutputLocation -ItemType Directory -Force) }
             $helpName = ($helpObject.Name.Split("$pathSeparator")[-1]).Replace('.ps1','')
             $outputFile = "$OutputLocation$pathSeparator$helpName.md"
             $mdHelp | Out-File "$outputFile" -Force -Encoding utf8
