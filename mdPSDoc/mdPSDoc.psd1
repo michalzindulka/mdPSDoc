@@ -24,7 +24,7 @@ GUID = 'cd7cd6bd-3488-419d-b9a6-18e6cf8359f6'
 Author = 'Michal Zindulka'
 
 # Company or vendor of this module
-CompanyName = 'michalzindulka.com'
+CompanyName = 'michal.zindulka@gmail.com'
 
 # Copyright statement for this module
 Copyright = '(c) Michal Zindulka. All rights reserved.'
@@ -101,7 +101,7 @@ PrivateData = @{
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/michalzindulka/mdPSDoc'
 
         # A URL to an icon representing this module.
         # IconUri = ''
