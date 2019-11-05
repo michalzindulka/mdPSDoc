@@ -39,7 +39,7 @@ function mdHelpAdd {
         # Display result only, used for testing:
         [Parameter()]
         [switch]
-        $Display=$false,
+        $Display = $False,
 
         # Don't trim the string:
         [Parameter(ParameterSetName='string')]
