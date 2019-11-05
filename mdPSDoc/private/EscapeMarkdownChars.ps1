@@ -7,9 +7,7 @@ function escapeMarkDownChars {
     )
 
     # Set my prefferences:
-    if ([string]::IsNullOrEmpty($PSCmdlet.MyInvocation.BoundParameters["InformationAction"])) {
-        $InformationPreference = 'Continue'
-    }
+    if ([string]::IsNullOrEmpty($PSCmdlet.MyInvocation.BoundParameters["InformationAction"])) { $InformationPreference = 'Continue' }
     $ErrorActionPreference = 'Stop'
 
     # Define hashtable to not replace characters over and over:

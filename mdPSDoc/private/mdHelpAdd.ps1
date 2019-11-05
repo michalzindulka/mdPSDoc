@@ -58,9 +58,7 @@ function mdHelpAdd {
     )
 
     # Set my prefferences:
-    if ([string]::IsNullOrEmpty($PSCmdlet.MyInvocation.BoundParameters["InformationAction"])) {
-        $InformationPreference = 'Continue'
-    }
+    if ([string]::IsNullOrEmpty($PSCmdlet.MyInvocation.BoundParameters["InformationAction"])) { $InformationPreference = 'Continue' }
     $ErrorActionPreference = 'Stop'
 
     # Perform action based on parameter set name:
