@@ -54,7 +54,11 @@ function mdHelpAdd {
         # Name:
         [Parameter(ParameterSetName='name')]
         [string]
-        $Name
+        $Name,
+
+        # Module:
+        [Parameter(ParameterSetName='module')]
+        $Module
     )
 
     # Set my prefferences:
@@ -213,13 +217,27 @@ function mdHelpAdd {
             if ($Display.IsPresent) { $mdHelp }
             return
         }
-        
+
         # Fill the command / script name:
         'name' {
             $returnMe = "# $($Name.Split("$pathSeparator")[-1].Replace('.ps1',''))"
             [void]$mdHelp.Add($returnMe)
             if ($Display.IsPresent) { $mdHelp }
             return
+        }
+
+        'module' {
+            if ( -Not $([System.String]::IsNullOrEmpty($Module)) ) {
+                $myModule = Get-Module $Module
+
+                # Output Module details to markdown help:
+                mdHelpAdd -Code yaml
+                mdHelpAdd -String "Module:  $($myModule.Name)"
+                mdHelpAdd -String "Version: $($myModule.Version.ToString())"
+                mdHelpAdd -String "Author:  $($myModule.Author)"
+                mdHelpAdd -String "URL:     $($myModule.ProjectUri.AbsoluteUri)"
+                mdHelpAdd -Code default
+            }
         }
     }
 }
