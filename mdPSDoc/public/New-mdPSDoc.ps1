@@ -111,11 +111,13 @@ function New-mdPSDoc {
 
     # Generate markdown help for each help object:
     foreach ($helpObject in $helpObjects) {
-        mdHelpAdd -Name $helpObject.Name
-        mdHelpAdd -String "Module: [$($helpObject.ModuleName)]()"
+        mdHelpAdd -Name $($helpObject.Name)
+        mdHelpAdd -Module $($helpObject.ModuleName)
         mdHelpAdd -EmptyLine
+        mdHelpAdd -String "## SYNOPSIS"
         mdHelpAdd -String "$($helpObject.Synopsis)"
         mdHelpAdd -EmptyLine
+        mdHelpAdd -String "## SYNTAX"
         mdHelpAdd -Syntax $($HelpObject.syntax)
         mdHelpAdd -EmptyLine
         mdHelpAdd -String  "## DESCRIPTION"
