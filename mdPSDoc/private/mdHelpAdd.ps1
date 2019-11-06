@@ -213,6 +213,7 @@ function mdHelpAdd {
             if ($Display.IsPresent) { $mdHelp }
             return
         }
+        
         # Fill the command / script name:
         'name' {
             $returnMe = "# $($Name.Split("$pathSeparator")[-1].Replace('.ps1',''))"
