@@ -1,12 +1,12 @@
 # mdPSDoc
 
 ##  About
-mdPSDoc is a customisable generator of a help files in a [Markdown][1] format from a [PowerShell Comment Based Help][2]. The default format of generated Markdown file is similar to the style which Microsoft uses on the online help for PowerShell, but it can be simply customised for your needs. Markdown format is supported by variety of platforms such as GitHub or Azure DevOps. mdPSDoc is shipped in a PowerShell module.
+mdPSDoc is a customisable generator of a PowerShell documentation in a [Markdown][1] format from a [PowerShell Comment Based Help][2]. The default format of generated documentation is similar to the style which Microsoft uses on their online help for PowerShell, but it can be simply customised for your needs. Markdown format is supported by variety of platforms such as GitHub or Azure DevOps. mdPSDoc is shipped in a PowerShell module.
 
 ## Why to use mdPSDoc ?
 
  - Easy generation of online help from PowerShell scripts.
- - Output Markdown style is customizable.
+ - The style is customizable.
  - Can be easily integrated with automation.
 
 ## Installation
