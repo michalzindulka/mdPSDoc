@@ -1,10 +1,17 @@
 # Get-AzStorageBlob
-Module: [Az.Storage]()
+```yaml
+Module:  Az.Storage
+Version: 1.6.0
+Author:  Microsoft Corporation
+URL:     https://github.com/Azure/azure-powershell
+```
 
 
+## SYNOPSIS
 Lists blobs in a container.
 
 
+## SYNTAX
 ```powershell
 Get-AzStorageBlob
 	[[-Blob] <System.String>]
